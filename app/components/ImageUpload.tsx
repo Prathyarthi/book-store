@@ -61,6 +61,10 @@ const ImageUpload = () => {
                 publicKey,
                 file,
                 fileName: file.name,
+                checks: JSON.stringify({
+                    size: 5 * 1024 * 1024, // 5 MB
+                    format: ["jpg", "jpeg", "png"]
+                }),
 
                 onProgress: (event) => {
                     setProgress((event.loaded / event.total) * 100);
