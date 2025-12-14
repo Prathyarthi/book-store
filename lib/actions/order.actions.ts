@@ -69,7 +69,7 @@ export const getOrdersForUser = async () => {
 
         const orders = await Order.find({ userId: session.user.id }).populate({
             path: "productId",
-            select: "title description imageUrl price",
+            select: "title author imageUrl price",
             options: {strictPopulate: false}
         }).sort({ createdAt: -1 }).lean();
 

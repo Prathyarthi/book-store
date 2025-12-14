@@ -2,7 +2,7 @@ import mongoose, { model, models, Schema } from "mongoose";
 
 interface IProduct {
     title: string;
-    description: string;
+    author: string;
     imageUrl: string;
     price: number;
     _id?: mongoose.Types.ObjectId;
@@ -15,7 +15,7 @@ const productSchema = new Schema<IProduct>({
         type: String,
         required: true,
     },
-    description: {
+    author: {
         type: String,
         required: true,
     },

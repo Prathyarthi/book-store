@@ -12,13 +12,15 @@ export default withAuth(
 
                 if (pathname.startsWith('/api/auth') ||
                     pathname === '/login' ||
-                    pathname === '/register') {
+                    pathname === '/register' ||
+                    pathname.startsWith('/auth/signin') ||
+                    pathname.startsWith('/auth/signup')) {
                     return true;
                 }
 
                 // Public routes
                 if (pathname === '/' ||
-                    pathname.startsWith('api/products') ||
+                    pathname.startsWith('/api/products') ||
                     pathname.startsWith('/products/')) {
                     return true;
                 }

@@ -11,8 +11,12 @@ export const listAllProducts = async () => {
 
         const products = await Product.find({}).lean();
 
-        if (!products || products.length === 0) {
+        if (!products) {
             throw new Error("No products found");
+        }
+
+        if (products.length === 0) {
+            return [];
         }
 
         return products;
