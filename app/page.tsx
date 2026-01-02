@@ -2,9 +2,8 @@ import { BookCard } from "./components/BookCard";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { listAllProducts } from "@/lib/actions/product.actions";
-import { ImageKitProvider } from "@imagekit/next";
+import { ImageKitProvider, Image as IKImage } from "@imagekit/next";
 import { BookOpen, TrendingUp, Award, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,7 +18,7 @@ export default async function Home() {
         <Header />
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="w-full py-16 md:py-24 lg:py-32 bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+          <section className="w-full py-16 md:py-8 bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
               <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20 items-center">
                 <div className="flex flex-col justify-center space-y-6">
@@ -75,7 +74,13 @@ export default async function Home() {
 
                 <div className="relative flex items-center justify-center">
                   <div className="relative z-10">
-                    <Image unoptimized quality={100} src="/homeImage.png" alt="Featured Books" width={400} height={400} />
+                    <IKImage
+                      src="homeImage.png"
+                      alt="Featured Books"
+                      width={400}
+                      height={400}
+                      transformation={[{ quality: 100 }]}
+                    />
                   </div>
                   <div className="absolute -top-6 -right-6 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
                   <div className="absolute -bottom-6 -left-6 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
