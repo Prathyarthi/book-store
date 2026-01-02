@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Star, Minus, Plus, BookOpen, Package, Shield } from "lucide-react";
@@ -8,25 +8,89 @@ import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { createOrder } from "@/lib/actions/order.actions";
 
 export default function ProductDetail() {
+    const params = useParams();
+    const productId = params.id as string;
+
     const [quantity, setQuantity] = useState(1);
     const [isWishlisted, setIsWishlisted] = useState(false);
+    const [product, setProduct] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-    // Mock product data - replace with actual data from API
-    const product = {
-        id: "1",
-        title: "The Great Gatsby",
-        author: "F. Scott Fitzgerald",
-        price: 24.99,
-        rating: 4.8,
-        reviews: 2547,
-        imageUrl: "/file.svg",
-        inStock: true
-    };
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const response = await fetch(`/api/products/${productId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch product");
+                }
+                const data = await response.json();
+                setProduct(data);
+            } catch (error) {
+                console.error("Error fetching product:", error);
+                toast.error("Failed to load product details");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (productId) {
+            fetchProduct();
+        }
+    }, [productId]);
 
     const incrementQuantity = () => setQuantity(q => q + 1);
     const decrementQuantity = () => setQuantity(q => Math.max(1, q - 1));
+
+    const handleBuyNow = async () => {
+        setIsPlacingOrder(true);
+        try {
+            await createOrder(product._id, quantity);
+            toast.success(`Order placed successfully for ${quantity} ${quantity > 1 ? 'items' : 'item'}!`);
+        } catch (error) {
+            console.error("Error placing order:", error);
+            toast.error(error instanceof Error ? error.message : "Failed to place order. Please try again.");
+        } finally {
+            setIsPlacingOrder(false);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading product...</p>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-1 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                    <div className="text-center">
+                        <p className="text-xl text-gray-600 dark:text-gray-400">Product not found</p>
+                        <Link href="/">
+                            <Button className="mt-4">Back to Home</Button>
+                        </Link>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -68,35 +132,14 @@ export default function ProductDetail() {
                                 </p>
                             </div>
 
-                            {/* Rating */}
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <Star
-                                            key={i}
-                                            className={`w-5 h-5 ${i < Math.floor(product.rating)
-                                                ? "fill-yellow-400 text-yellow-400"
-                                                : "text-gray-300 dark:text-gray-600"
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
-                                <span className="text-gray-600 dark:text-gray-400">
-                                    {product.rating} ({product.reviews} reviews)
-                                </span>
-                            </div>
-
                             {/* Price */}
                             <div className="py-4 border-y border-gray-200 dark:border-gray-700">
                                 <div className="flex items-baseline gap-3">
                                     <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                                        ${product.price.toFixed(2)}
+                                        &#8377;{product.price.toFixed(2)}
                                     </span>
-                                    <span className={`text-sm font-semibold ${product.inStock
-                                        ? "text-green-600 dark:text-green-400"
-                                        : "text-red-600 dark:text-red-400"
-                                        }`}>
-                                        {product.inStock ? "In Stock" : "Out of Stock"}
+                                    <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                        In Stock
                                     </span>
                                 </div>
                             </div>
@@ -129,10 +172,20 @@ export default function ProductDetail() {
                             <div className="flex gap-4">
                                 <Button
                                     className="flex-1 h-12 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-                                    disabled={!product.inStock}
+                                    onClick={handleBuyNow}
+                                    disabled={isPlacingOrder}
                                 >
-                                    <ShoppingCart className="w-5 h-5 mr-2" />
-                                    Add to Cart
+                                    {isPlacingOrder ? (
+                                        <>
+                                            <ShoppingCart className="w-5 h-5 mr-2 animate-pulse" />
+                                            Placing Order...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ShoppingCart className="w-5 h-5 mr-2" />
+                                            Buy Now
+                                        </>
+                                    )}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -148,20 +201,6 @@ export default function ProductDetail() {
                                     />
                                 </Button>
                             </div>
-
-                            {/* Product Details */}
-                            <Card className="border-0 shadow-md bg-white dark:bg-gray-800">
-                                <CardContent className="p-6 space-y-3">
-                                    <h3 className="text-lg font-semibold mb-4">Product Details</h3>
-                                    <div className="grid grid-cols-2 gap-3 text-sm">
-                                        <div className="text-gray-600 dark:text-gray-400">Author:</div>
-                                        <div className="font-medium">{product.author}</div>
-
-                                        <div className="text-gray-600 dark:text-gray-400">Price:</div>
-                                        <div className="font-medium">${product.price.toFixed(2)}</div>
-                                    </div>
-                                </CardContent>
-                            </Card>
 
                             {/* Features */}
                             <div className="grid grid-cols-3 gap-4">

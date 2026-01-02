@@ -22,9 +22,10 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const abortController = useRef(new AbortController());
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const authenticator = async () => {
         try {
@@ -46,6 +47,7 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setSelectedFile(file);
             // Create preview
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -56,15 +58,19 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
     };
 
     const handleUpload = async () => {
-        const fileInput = fileInputRef.current;
-        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        if (!selectedFile) {
             toast.error("Please select a file to upload");
             return;
         }
 
-        const file = fileInput.files[0];
+        const file = selectedFile;
         setIsUploading(true);
         setProgress(0);
+
+        // Create abort controller for this upload
+        if (!abortControllerRef.current) {
+            abortControllerRef.current = new AbortController();
+        }
 
         let authParams;
         try {
@@ -85,16 +91,12 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
                 publicKey,
                 file,
                 fileName: file.name,
-                checks: JSON.stringify({
-                    size: 5 * 1024 * 1024, // 5 MB
-                    format: ["jpg", "jpeg", "png"]
-                }),
 
                 onProgress: (event) => {
                     setProgress((event.loaded / event.total) * 100);
                 },
 
-                abortSignal: abortController.current.signal,
+                abortSignal: abortControllerRef.current?.signal,
             });
 
             const imageUrl = uploadResponse.url || "";
@@ -126,6 +128,7 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
     const handleRemove = () => {
         setUploadedImage(null);
         setPreview(null);
+        setSelectedFile(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -215,6 +218,6 @@ const ImageUpload = ({ onImageUpload }: ImageUploadProps) => {
             )}
         </div>
     );
-};
+}
 
 export default ImageUpload;

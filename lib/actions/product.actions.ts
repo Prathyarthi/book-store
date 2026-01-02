@@ -87,9 +87,9 @@ export const getProductById = async (productId: string) => {
             throw new Error("Product not found");
         }
 
-        return product;
+        return JSON.parse(JSON.stringify(product));
     } catch (error) {
         console.error("Error getting product by ID:", error);
-        throw new Error("Failed to get product");
+        throw new Error(error instanceof Error ? error.message : "Failed to get product");
     }
 }

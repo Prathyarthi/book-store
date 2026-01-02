@@ -1,11 +1,18 @@
 import { getProductById } from "@/lib/actions/product.actions";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const GET = async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) => {
     try {
-        const product = await getProductById(params.id);
+        const { id } = await params;
+        const product = await getProductById(id);
         return NextResponse.json(product, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Failed to retrieve product" }, { status: 500 });
+        console.error("API Error:", error);
+        return NextResponse.json({
+            error: error instanceof Error ? error.message : "Failed to retrieve product"
+        }, { status: 500 });
     }
 }

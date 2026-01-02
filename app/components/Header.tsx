@@ -1,11 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, BookOpen, User, LogOut, LayoutDashboard, Package } from "lucide-react";
+import { ShoppingCart, BookOpen, LogOut, LayoutDashboard, Package } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
@@ -19,7 +16,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Header() {
   const { data: session } = useSession();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const getInitials = (email: string) => {
     return email.charAt(0).toUpperCase();
@@ -27,7 +23,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 md:px-6">
         {/* Logo */}
         <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity" href="/">
           <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
@@ -53,7 +49,7 @@ export function Header() {
           {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold">
                       {getInitials(session.user?.email || "U")}

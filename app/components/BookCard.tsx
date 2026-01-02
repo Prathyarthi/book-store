@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -57,7 +55,7 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
               }`}
           />
         </button>
-        <div className="absolute bottom-3 left-3 px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg">
+        <div className="absolute bottom-3 left-3 px-3 py-1 bg-linear-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg">
           Bestseller
         </div>
       </div>
@@ -89,7 +87,7 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <div className="flex flex-col">
           <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            ${price.toFixed(2)}
+            &#8377;{price.toFixed(2)}
           </span>
         </div>
         <Button
