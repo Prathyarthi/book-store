@@ -97,7 +97,7 @@ export default function ProductDetail() {
             <Header />
 
             <main className="flex-1 bg-gray-50 dark:bg-gray-900">
-                <div className="container px-4 py-8">
+                <div className="container mx-auto max-w-7xl px-4 py-8">
                     {/* Breadcrumb */}
                     <div className="mb-6 text-sm text-gray-600 dark:text-gray-400">
                         <Link href="/" className="hover:text-blue-600 dark:hover:text-blue-400">Home</Link>

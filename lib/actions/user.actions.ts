@@ -2,6 +2,8 @@
 
 import { connectToDatabase } from "@/db";
 import User from "@/models/User";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth";
 
 export const signup = async (email: string, password: string) => {
     try {
@@ -33,5 +35,24 @@ export const signup = async (email: string, password: string) => {
     } catch (error) {
         console.error("Signup Error:", error);
         throw new Error("Internal Server Error");
+    }
+}
+
+export const getAllUsers = async () => {
+    try {
+        const session = await getServerSession(authOptions);
+
+        if (!session || session.user.role !== 'admin') {
+            throw new Error("Unauthorized: Admin access required");
+        }
+
+        await connectToDatabase();
+
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 }).lean();
+
+        return JSON.parse(JSON.stringify(users));
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        throw new Error(error instanceof Error ? error.message : "Failed to fetch users");
     }
 }

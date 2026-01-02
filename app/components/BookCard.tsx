@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Image } from "@imagekit/next";
-import { ShoppingCart, Heart, Star } from "lucide-react";
+import { Eye, Heart, Star } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -18,11 +18,6 @@ type BookCardProps = {
 
 export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: BookCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
-
-  const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log("Adding to cart:", title);
-  };
 
   const toggleWishlist = () => {
     setIsWishlisted(!isWishlisted);
@@ -50,8 +45,8 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
         >
           <Heart
             className={`w-5 h-5 ${isWishlisted
-                ? "fill-red-500 text-red-500"
-                : "text-gray-700 dark:text-gray-300"
+              ? "fill-red-500 text-red-500"
+              : "text-gray-700 dark:text-gray-300"
               }`}
           />
         </button>
@@ -73,8 +68,8 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
             <Star
               key={i}
               className={`w-4 h-4 ${i < Math.floor(rating)
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-gray-300 dark:text-gray-600"
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-gray-300 dark:text-gray-600"
                 }`}
             />
           ))}
@@ -90,13 +85,12 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
             &#8377;{price.toFixed(2)}
           </span>
         </div>
-        <Button
-          onClick={handleAddToCart}
-          className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
-        >
-          <ShoppingCart className="w-4 h-4 mr-2" />
-          Add to Cart
-        </Button>
+        <Link href={`/product/${id}`}>
+          <Button className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all">
+            <Eye className="w-4 h-4 mr-1" />
+            View
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

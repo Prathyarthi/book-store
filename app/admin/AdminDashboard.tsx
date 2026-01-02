@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,17 +18,48 @@ import {
     BookOpen
 } from "lucide-react";
 import Link from "next/link";
+import { listAllProducts, deleteProduct } from "@/lib/actions/product.actions";
+import { getAllUsers } from "@/lib/actions/user.actions";
+import { getAllOrders } from "@/lib/actions/order.actions";
+import { toast } from "sonner";
+import Image from "next/image";
 
 type TabType = "overview" | "products" | "users" | "orders";
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<TabType>("overview");
+    const [products, setProducts] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
+    const [orders, setOrders] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const [productsData, usersData, ordersData] = await Promise.all([
+                    listAllProducts(),
+                    getAllUsers(),
+                    getAllOrders()
+                ]);
+                setProducts(productsData);
+                setUsers(usersData);
+                setOrders(ordersData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast.error("Failed to load dashboard data");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             {/* Header */}
             <div className="border-b bg-white dark:bg-gray-800 sticky top-0 z-40">
-                <div className="container px-4 py-4">
+                <div className="container mx-auto max-w-7xl px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -48,7 +79,7 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="container px-4 py-8">
+            <div className="container mx-auto max-w-7xl px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     {/* Sidebar Navigation */}
                     <div className="lg:col-span-1">
@@ -94,10 +125,10 @@ export default function AdminDashboard() {
 
                     {/* Main Content */}
                     <div className="lg:col-span-4">
-                        {activeTab === "overview" && <OverviewTab />}
-                        {activeTab === "products" && <ProductsTab />}
-                        {activeTab === "users" && <UsersTab />}
-                        {activeTab === "orders" && <OrdersTab />}
+                        {activeTab === "overview" && <OverviewTab orders={orders} products={products} users={users} isLoading={isLoading} />}
+                        {activeTab === "products" && <ProductsTab products={products} setProducts={setProducts} isLoading={isLoading} />}
+                        {activeTab === "users" && <UsersTab users={users} isLoading={isLoading} />}
+                        {activeTab === "orders" && <OrdersTab orders={orders} isLoading={isLoading} />}
                     </div>
                 </div>
             </div>
@@ -105,41 +136,48 @@ export default function AdminDashboard() {
     );
 }
 
-function OverviewTab() {
+function OverviewTab({ orders, products, users, isLoading }: { orders: any[], products: any[], users: any[], isLoading: boolean }) {
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.amount / 100), 0);
+    const recentOrders = orders.slice(0, 5);
+
     const stats = [
         {
             title: "Total Revenue",
-            value: "$12,345",
-            change: "+12.5%",
+            value: `₹${totalRevenue.toFixed(2)}`,
+            change: orders.length > 0 ? `${orders.length} orders` : "No orders",
             icon: DollarSign,
             color: "text-green-600 dark:text-green-400",
             bg: "bg-green-100 dark:bg-green-900/20"
         },
         {
             title: "Total Orders",
-            value: "145",
-            change: "+8.2%",
+            value: orders.length.toString(),
+            change: orders.filter(o => o.status === 'pending').length + " pending",
             icon: ShoppingCart,
             color: "text-blue-600 dark:text-blue-400",
             bg: "bg-blue-100 dark:bg-blue-900/20"
         },
         {
             title: "Total Products",
-            value: "89",
-            change: "+3",
+            value: products.length.toString(),
+            change: products.length > 0 ? "In stock" : "No products",
             icon: Package,
             color: "text-purple-600 dark:text-purple-400",
             bg: "bg-purple-100 dark:bg-purple-900/20"
         },
         {
             title: "Total Users",
-            value: "1,234",
-            change: "+23.1%",
+            value: users.length.toString(),
+            change: users.filter(u => u.role === 'user').length + " customers",
             icon: Users,
             color: "text-orange-600 dark:text-orange-400",
             bg: "bg-orange-100 dark:bg-orange-900/20"
         }
     ];
+
+    if (isLoading) {
+        return <div className="text-center py-12">Loading dashboard data...</div>;
+    }
 
     return (
         <div className="space-y-6">
@@ -154,8 +192,7 @@ function OverviewTab() {
                                         {stat.title}
                                     </p>
                                     <h3 className="text-2xl font-bold">{stat.value}</h3>
-                                    <p className="text-sm text-green-600 dark:text-green-400 mt-1 flex items-center">
-                                        <TrendingUp className="w-4 h-4 mr-1" />
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center">
                                         {stat.change}
                                     </p>
                                 </div>
@@ -175,35 +212,61 @@ function OverviewTab() {
                     <CardDescription>Latest orders from your store</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((item) => (
-                            <div key={item} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                        <ShoppingCart className="w-6 h-6 text-white" />
+                    {recentOrders.length === 0 ? (
+                        <p className="text-center text-gray-500 py-8">No orders yet</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {recentOrders.map((order: any) => (
+                                <div key={order._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                            <ShoppingCart className="w-6 h-6 text-white" />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">{order.productId?.title || "Unknown Product"}</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{order.userId?.email || "Unknown User"}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-semibold">Order #100{item}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">user@example.com</p>
+                                    <div className="text-right">
+                                        <p className="font-semibold">₹{(order.amount / 100).toFixed(2)}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            {new Date(order.createdAt).toLocaleDateString()}
+                                        </p>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-semibold">${(Math.random() * 100 + 20).toFixed(2)}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {new Date().toLocaleDateString()}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
     );
 }
 
-function ProductsTab() {
+function ProductsTab({ products, setProducts, isLoading }: { products: any[], setProducts: (products: any[]) => void, isLoading: boolean }) {
     const [searchQuery, setSearchQuery] = useState("");
+
+    const filteredProducts = products.filter(product =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.author.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleDelete = async (productId: string) => {
+        if (!confirm("Are you sure you want to delete this product?")) return;
+
+        try {
+            await deleteProduct(productId);
+            setProducts(products.filter(p => p._id !== productId));
+            toast.success("Product deleted successfully");
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            toast.error("Failed to delete product");
+        }
+    };
+
+    if (isLoading) {
+        return <div className="text-center py-12">Loading products...</div>;
+    }
 
     return (
         <div className="space-y-6">
@@ -234,103 +297,140 @@ function ProductsTab() {
             <Card className="border-0 shadow-md">
                 <CardHeader>
                     <CardTitle>All Products</CardTitle>
-                    <CardDescription>Manage your product inventory</CardDescription>
+                    <CardDescription>Manage your product inventory ({filteredProducts.length} products)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((item) => (
-                            <div key={item} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                                    <div>
-                                        <p className="font-semibold">Book Title {item}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Author Name</p>
-                                        <p className="text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
-                                            ${(Math.random() * 50 + 10).toFixed(2)}
-                                        </p>
+                    {filteredProducts.length === 0 ? (
+                        <p className="text-center text-gray-500 py-8">
+                            {searchQuery ? "No products found matching your search" : "No products yet. Add your first product!"}
+                        </p>
+                    ) : (
+                        <div className="space-y-4">
+                            {filteredProducts.map((product: any) => (
+                                <div key={product._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+                                            <Image
+                                                src={product.imageUrl}
+                                                alt={product.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">{product.title}</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">{product.author}</p>
+                                            <p className="text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
+                                                ₹{product.price.toFixed(2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleDelete(product._id)}
+                                            className="text-red-600 hover:text-red-700"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" size="icon">
-                                        <Edit className="w-4 h-4" />
-                                    </Button>
-                                    <Button variant="outline" size="icon" className="text-red-600 hover:text-red-700">
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
     );
 }
 
-function UsersTab() {
+function UsersTab({ users, isLoading }: { users: any[], isLoading: boolean }) {
+    if (isLoading) {
+        return <div className="text-center py-12">Loading users...</div>;
+    }
+
     return (
         <Card className="border-0 shadow-md">
             <CardHeader>
                 <CardTitle>All Users</CardTitle>
-                <CardDescription>Manage registered users</CardDescription>
+                <CardDescription>Manage registered users ({users.length} users)</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                    U{item}
+                {users.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No users registered yet</p>
+                ) : (
+                    <div className="space-y-4">
+                        {users.map((user: any) => (
+                            <div key={user._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                        {user.email.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold">{user.email}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            Joined {new Date(user.createdAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-semibold">user{item}@example.com</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Joined {new Date().toLocaleDateString()}
-                                    </p>
+                                <div className="flex items-center gap-2">
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                                        ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400'
+                                        : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                        }`}>
+                                        {user.role === 'admin' ? 'Admin' : 'Customer'}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
-                                    Active
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </CardContent>
         </Card>
     );
 }
 
-function OrdersTab() {
+function OrdersTab({ orders, isLoading }: { orders: any[], isLoading: boolean }) {
+    if (isLoading) {
+        return <div className="text-center py-12">Loading orders...</div>;
+    }
+
     return (
         <Card className="border-0 shadow-md">
             <CardHeader>
                 <CardTitle>All Orders</CardTitle>
-                <CardDescription>Manage customer orders</CardDescription>
+                <CardDescription>Manage customer orders ({orders.length} orders)</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            <div className="flex items-center justify-between mb-3">
-                                <div>
-                                    <p className="font-semibold">Order #100{item}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">user@example.com</p>
+                {orders.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No orders yet</p>
+                ) : (
+                    <div className="space-y-4">
+                        {orders.map((order: any) => (
+                            <div key={order._id} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div>
+                                        <p className="font-semibold">{order.productId?.title || "Unknown Product"} (x{order.quantity})</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">{order.userId?.email || "Unknown User"}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-semibold">₹{(order.amount / 100).toFixed(2)}</p>
+                                        <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${order.status === 'completed'
+                                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                            : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                                            }`}>
+                                            {order.status}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-semibold">${(Math.random() * 100 + 20).toFixed(2)}</p>
-                                    <span className="inline-block mt-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full">
-                                        Processing
-                                    </span>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    <p>{new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}</p>
                                 </div>
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                                <p>2 items • {new Date().toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </CardContent>
         </Card>
     );

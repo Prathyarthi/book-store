@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, BookOpen, LogOut, LayoutDashboard, Package } from "lucide-react";
+import { BookOpen, LogOut, LayoutDashboard, Package } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
@@ -36,15 +36,6 @@ export function Header() {
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Cart Button */}
-          <Button variant="ghost" size="icon" className="relative hover:bg-gray-100 dark:hover:bg-gray-800">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-              0
-            </span>
-            <span className="sr-only">Shopping Cart</span>
-          </Button>
-
           {/* User Menu or Auth Buttons */}
           {session ? (
             <DropdownMenu>

@@ -81,3 +81,34 @@ export const getOrdersForUser = async () => {
         throw new Error("Failed to retrieve orders");
     }
 }
+
+export const getAllOrders = async () => {
+    try {
+        const session = await getServerSession(authOptions);
+
+        if (!session || session.user.role !== 'admin') {
+            throw new Error("Unauthorized: Admin access required");
+        }
+
+        await connectToDatabase();
+
+        const orders = await Order.find({})
+            .populate({
+                path: "productId",
+                select: "title author imageUrl price",
+                options: { strictPopulate: false }
+            })
+            .populate({
+                path: "userId",
+                select: "email",
+                options: { strictPopulate: false }
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return JSON.parse(JSON.stringify(orders));
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw new Error(error instanceof Error ? error.message : "Failed to fetch orders");
+    }
+}
