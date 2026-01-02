@@ -18,7 +18,7 @@ export default async function Home() {
         <Header />
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="w-full py-16 md:py-8 bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+          <section className="w-full py-16 md:py-8 bg-gray-50 dark:bg-gray-900">
             <div className="container mx-auto px-4 md:px-6 max-w-7xl">
               <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-20 items-center">
                 <div className="flex flex-col justify-center space-y-6">
@@ -26,7 +26,7 @@ export default async function Home() {
                     <div className="inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-semibold rounded-full">
                       📚 Welcome to Parimala Geleyara Balaga
                     </div>
-                    <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl/none bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl/none text-gray-900 dark:text-white">
                       Discover Your Next Great Read
                     </h1>
                     <p className="max-w-[600px] text-gray-600 md:text-xl dark:text-gray-400 leading-relaxed">
@@ -36,7 +36,7 @@ export default async function Home() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link href="#books">
-                      <Button className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all cursor-pointer">
+                      <Button className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all cursor-pointer">
                         <BookOpen className="w-5 h-5 mr-2" />
                         Browse Collection
                       </Button>
@@ -137,7 +137,7 @@ export default async function Home() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
-                {products.map((product) => (
+                {products.map((product: any) => (
                   <BookCard
                     key={String(product._id)}
                     id={String(product._id)}

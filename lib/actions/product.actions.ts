@@ -19,7 +19,7 @@ export const listAllProducts = async () => {
             return [];
         }
 
-        return products;
+        return JSON.parse(JSON.stringify(products));
     } catch (error) {
         console.error("Error listing products:", error);
         throw new Error("Failed to list products");

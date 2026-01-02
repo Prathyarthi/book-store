@@ -50,7 +50,7 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
               }`}
           />
         </button>
-        <div className="absolute bottom-3 left-3 px-3 py-1 bg-linear-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg">
+        <div className="absolute bottom-3 left-3 px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-xs font-bold rounded-full shadow-lg">
           Bestseller
         </div>
       </div>
@@ -86,7 +86,7 @@ export function BookCard({ id, title, author, price, imageUrl, rating = 4.5 }: B
           </span>
         </div>
         <Link href={`/product/${id}`}>
-          <Button className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all">
+          <Button className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white shadow-lg hover:shadow-xl transition-all">
             <Eye className="w-4 h-4 mr-1" />
             View
           </Button>

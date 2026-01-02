@@ -26,10 +26,10 @@ export function Header() {
       <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4 md:px-6">
         {/* Logo */}
         <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity" href="/">
-          <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-            <BookOpen className="h-6 w-6 text-white" />
+          <div className="w-10 h-10 bg-black dark:bg-white rounded-lg flex items-center justify-center shadow-md">
+            <BookOpen className="h-6 w-6 text-white dark:text-black" />
           </div>
-          <span className="font-bold text-xl bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hidden sm:inline">
+          <span className="font-bold text-xl text-gray-900 dark:text-white hidden sm:inline">
             Parimala Geleyara Balaga
           </span>
         </Link>
@@ -42,7 +42,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-linear-to-br from-blue-500 to-purple-600 text-white font-semibold">
+                    <AvatarFallback className="bg-black dark:bg-white text-white dark:text-black font-semibold">
                       {getInitials(session.user?.email || "U")}
                     </AvatarFallback>
                   </Avatar>
@@ -58,12 +58,6 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/orders" className="cursor-pointer">
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>My Orders</span>
-                  </Link>
-                </DropdownMenuItem>
                 {session.user?.role === "admin" && (
                   <>
                     <DropdownMenuSeparator />
@@ -93,7 +87,7 @@ export function Header() {
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white">
                   Sign Up
                 </Button>
               </Link>

@@ -171,7 +171,7 @@ export default function ProductDetail() {
                             {/* Action Buttons */}
                             <div className="flex gap-4">
                                 <Button
-                                    className="flex-1 h-12 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+                                    className="flex-1 h-12 bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
                                     onClick={handleBuyNow}
                                     disabled={isPlacingOrder}
                                 >

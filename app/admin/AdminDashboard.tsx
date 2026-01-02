@@ -60,35 +60,35 @@ export default function AdminDashboard() {
             {/* Header */}
             <div className="border-b bg-white dark:bg-gray-800 sticky top-0 z-40">
                 <div className="container mx-auto max-w-7xl px-4 py-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                                 Admin Dashboard
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mt-1">
+                            <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
                                 Manage your bookstore
                             </p>
                         </div>
                         <Link href="/">
-                            <Button variant="outline">
-                                <BookOpen className="w-4 h-4 mr-2" />
-                                Back to Store
+                            <Button variant="outline" size="sm" className="md:h-10">
+                                <BookOpen className="w-4 h-4 md:mr-2" />
+                                <span className="hidden md:inline">Back to Store</span>
                             </Button>
                         </Link>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto max-w-7xl px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className="container mx-auto max-w-7xl px-4 py-4 md:py-8">
+                <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 md:gap-6">
                     {/* Sidebar Navigation */}
                     <div className="lg:col-span-1">
                         <Card className="border-0 shadow-md">
-                            <CardContent className="p-4">
-                                <nav className="space-y-2">
+                            <CardContent className="p-2 md:p-4">
+                                <nav className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
                                     <Button
                                         variant={activeTab === "overview" ? "default" : "ghost"}
-                                        className="w-full justify-start"
+                                        className="flex-shrink-0 lg:w-full justify-start whitespace-nowrap"
                                         onClick={() => setActiveTab("overview")}
                                     >
                                         <LayoutDashboard className="w-4 h-4 mr-2" />
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
                                     </Button>
                                     <Button
                                         variant={activeTab === "products" ? "default" : "ghost"}
-                                        className="w-full justify-start"
+                                        className="flex-shrink-0 lg:w-full justify-start whitespace-nowrap"
                                         onClick={() => setActiveTab("products")}
                                     >
                                         <Package className="w-4 h-4 mr-2" />
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
                                     </Button>
                                     <Button
                                         variant={activeTab === "users" ? "default" : "ghost"}
-                                        className="w-full justify-start"
+                                        className="flex-shrink-0 lg:w-full justify-start whitespace-nowrap"
                                         onClick={() => setActiveTab("users")}
                                     >
                                         <Users className="w-4 h-4 mr-2" />
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
                                     </Button>
                                     <Button
                                         variant={activeTab === "orders" ? "default" : "ghost"}
-                                        className="w-full justify-start"
+                                        className="flex-shrink-0 lg:w-full justify-start whitespace-nowrap"
                                         onClick={() => setActiveTab("orders")}
                                     >
                                         <ShoppingCart className="w-4 h-4 mr-2" />
@@ -180,9 +180,9 @@ function OverviewTab({ orders, products, users, isLoading }: { orders: any[], pr
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {stats.map((stat, index) => (
                     <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-shadow">
                         <CardContent className="p-6">
@@ -215,21 +215,21 @@ function OverviewTab({ orders, products, users, isLoading }: { orders: any[], pr
                     {recentOrders.length === 0 ? (
                         <p className="text-center text-gray-500 py-8">No orders yet</p>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-3 md:space-y-4">
                             {recentOrders.map((order: any) => (
-                                <div key={order._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                                            <ShoppingCart className="w-6 h-6 text-white" />
+                                <div key={order._id} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg gap-3">
+                                    <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-black dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-white dark:text-black" />
                                         </div>
-                                        <div>
-                                            <p className="font-semibold">{order.productId?.title || "Unknown Product"}</p>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">{order.userId?.email || "Unknown User"}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-semibold text-sm md:text-base truncate">{order.productId?.title || "Unknown Product"}</p>
+                                            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">{order.userId?.email || "Unknown User"}</p>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold">₹{(order.amount / 100).toFixed(2)}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="font-semibold text-sm md:text-base">₹{(order.amount / 100).toFixed(2)}</p>
+                                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                                             {new Date(order.createdAt).toLocaleDateString()}
                                         </p>
                                     </div>
@@ -284,7 +284,7 @@ function ProductsTab({ products, setProducts, isLoading }: { products: any[], se
                             />
                         </div>
                         <Link href="/admin/products/new">
-                            <Button className="bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                            <Button className="bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white">
                                 <Plus className="w-4 h-4 mr-2" />
                                 Add Product
                             </Button>
@@ -305,11 +305,11 @@ function ProductsTab({ products, setProducts, isLoading }: { products: any[], se
                             {searchQuery ? "No products found matching your search" : "No products yet. Add your first product!"}
                         </p>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-3 md:space-y-4">
                             {filteredProducts.map((product: any) => (
-                                <div key={product._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden">
+                                <div key={product._id} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg gap-3">
+                                    <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+                                        <div className="w-12 h-16 md:w-16 md:h-20 bg-gray-200 dark:bg-gray-700 rounded-lg relative overflow-hidden flex-shrink-0">
                                             <Image
                                                 src={product.imageUrl}
                                                 alt={product.title}
@@ -317,20 +317,20 @@ function ProductsTab({ products, setProducts, isLoading }: { products: any[], se
                                                 className="object-cover"
                                             />
                                         </div>
-                                        <div>
-                                            <p className="font-semibold">{product.title}</p>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">{product.author}</p>
-                                            <p className="text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-semibold text-sm md:text-base truncate">{product.title}</p>
+                                            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">{product.author}</p>
+                                            <p className="text-xs md:text-sm font-semibold text-green-600 dark:text-green-400 mt-1">
                                                 ₹{product.price.toFixed(2)}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 flex-shrink-0">
                                         <Button
                                             variant="outline"
                                             size="icon"
                                             onClick={() => handleDelete(product._id)}
-                                            className="text-red-600 hover:text-red-700"
+                                            className="text-red-600 hover:text-red-700 h-9 w-9 md:h-10 md:w-10"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
@@ -360,22 +360,22 @@ function UsersTab({ users, isLoading }: { users: any[], isLoading: boolean }) {
                 {users.length === 0 ? (
                     <p className="text-center text-gray-500 py-8">No users registered yet</p>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                         {users.map((user: any) => (
-                            <div key={user._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                            <div key={user._id} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg gap-3">
+                                <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-black dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black font-semibold flex-shrink-0">
                                         {user.email.charAt(0).toUpperCase()}
                                     </div>
-                                    <div>
-                                        <p className="font-semibold">{user.email}</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-semibold text-sm md:text-base truncate">{user.email}</p>
+                                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                                             Joined {new Date(user.createdAt).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                    <span className={`px-2 md:px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${user.role === 'admin'
                                         ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400'
                                         : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                                         }`}>
@@ -406,17 +406,17 @@ function OrdersTab({ orders, isLoading }: { orders: any[], isLoading: boolean })
                 {orders.length === 0 ? (
                     <p className="text-center text-gray-500 py-8">No orders yet</p>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                         {orders.map((order: any) => (
-                            <div key={order._id} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <div className="flex items-center justify-between mb-3">
-                                    <div>
-                                        <p className="font-semibold">{order.productId?.title || "Unknown Product"} (x{order.quantity})</p>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">{order.userId?.email || "Unknown User"}</p>
+                            <div key={order._id} className="p-3 md:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div className="flex items-start justify-between gap-3 mb-2 md:mb-3">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-semibold text-sm md:text-base">{order.productId?.title || "Unknown Product"} (x{order.quantity})</p>
+                                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">{order.userId?.email || "Unknown User"}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold">₹{(order.amount / 100).toFixed(2)}</p>
-                                        <span className={`inline-block mt-1 px-3 py-1 text-xs font-semibold rounded-full ${order.status === 'completed'
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="font-semibold text-sm md:text-base">₹{(order.amount / 100).toFixed(2)}</p>
+                                        <span className={`inline-block mt-1 px-2 md:px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${order.status === 'completed'
                                             ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                                             : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
                                             }`}>
@@ -424,7 +424,7 @@ function OrdersTab({ orders, isLoading }: { orders: any[], isLoading: boolean })
                                         </span>
                                     </div>
                                 </div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                                     <p>{new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}</p>
                                 </div>
                             </div>

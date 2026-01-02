@@ -39,13 +39,13 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <Card className="w-full max-w-md shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
         <CardHeader className="space-y-3 text-center pb-6">
-          <div className="mx-auto w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-            <BookOpen className="w-8 h-8 text-white" />
+          <div className="mx-auto w-16 h-16 bg-black dark:bg-white rounded-full flex items-center justify-center shadow-lg">
+            <BookOpen className="w-8 h-8 text-white dark:text-black" />
           </div>
-          <CardTitle className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">
             Welcome Back
           </CardTitle>
           <CardDescription className="text-base">
@@ -96,7 +96,7 @@ export default function SignIn() {
             </div>
             <Button
               type="submit"
-              className="w-full h-11 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="w-full h-11 bg-black hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white font-semibold shadow-lg hover:shadow-xl transition-all"
               disabled={isLoading}
             >
               {isLoading ? (
